@@ -69,7 +69,7 @@ function App() {
     <>
       <Navbar/>
         <div className="container mx-auto my-5 rounded-xl p-5 bg-violet-100 min-h-[80vh] w-1/2">    
-        <h1 className='font-bold text-center text-xl '>Todo LIst</h1>
+        <h1 className='font-bold text-center text-xl '>Todo List</h1>
           <div className="addTodo my-5 flex flex-col gap-4">
             <h2 className='text-lg font-bold'>Add a todo</h2>
             <input onChange={handleChange} value ={todo} type="text"  className='w-full bg-white rounded-lg px-5 py-1'/>
