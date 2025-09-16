@@ -9,17 +9,23 @@ function App() {
   const handleEdit = () =>{
 
   }
-  const handleDelete = () =>{
-    
+  const handleDelete = (e, id) =>{
+    let newTodos = todos.filter(item=>{
+      return item.id !== id;
+    });
+    setTodos(newTodos)
   }
+
   const handleAdd = () =>{
     setTodos([...todos, {id: uuidv4(), todo, isCompleted: false}])
     setTodo("")
     console.log(todos);
   }
+
   const handleChange = (e) =>{
     setTodo(e.target.value)
   }
+
   const handleCheckbox = (e) => {
     let id = e.target.name;
     let index = todos.findIndex(item=>{
@@ -41,13 +47,16 @@ function App() {
           </div>
             <h2 className='text-lg font-bold'>Your Todos</h2>
             <div className="todos">
+              {todos.length === 0 && <div className='m-5'>No todos to display</div>}
               {todos.map(item=>{            
               return <div key={item.id} className="todo flex w-1/2 justify-between my-3">
-                <input name={item.id} onChange={handleCheckbox} type="checkbox" value={item.isCompleted} id="" />
-                <div className={item.isCompleted?"line-through": ""}>{item.todo}</div>
+                <div className='flex gap-5'>
+                  <input name={item.id} onChange={handleCheckbox} type="checkbox" value={item.isCompleted} id="" />
+                  <div className={item.isCompleted?"line-through": ""}>{item.todo}</div>
+                </div>
                 <div className="buttons">
                   <button className='bg-violet-800 hover:bg-violet-950 p-2 py-1 text-sm font-bold text-white rounded-md mx-1' onClick={handleEdit}>Edit</button>
-                  <button className='bg-violet-800 hover:bg-violet-950 p-2 py-1 text-sm font-bold text-white rounded-md mx-1' onClick={handleDelete}>Delete</button>
+                  <button className='bg-violet-800 hover:bg-violet-950 p-2 py-1 text-sm font-bold text-white rounded-md mx-1' onClick={(e)=>{handleDelete(e, item.id)}}>Delete</button>
                 </div>
               </div>
               })}
