@@ -7,4 +7,5 @@ export default defineConfig({
   plugins: [react(),
     tailwindcss(),
   ],
-})
+  base: "/TodoList-using-React-Js",
+});
