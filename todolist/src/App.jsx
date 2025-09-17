@@ -7,47 +7,46 @@ import { FaDeleteLeft } from "react-icons/fa6";
 
 function App() {
   const [todo, setTodo] = useState("")
-  const [todos, setTodos] = useState([])
+  const [todos, setTodos] = useState(()=>{
+    const todoString = localStorage.getItem("todos");
+    return todoString ? JSON.parse(todoString) : [];
+  });
+
   const [showFinished, setshowFinished] = useState(true)
-
-  useEffect(() => {
-    let todoString = localStorage.getItem("todos")
-    if(todoString){
-      let todos = JSON.parse(localStorage.getItem("todos"))
-      setTodos(todos)
-    }
-  }, [])
   
+  useEffect(()=>{
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
-  const saveToLS = () => {
-    localStorage.setItem("todos", JSON.stringify(todos))
-  }
-  
   const toggleFinished = (e) => {  
-    setshowFinished(!showFinished)
+    setshowFinished(prev => !prev)
   }
 
   const handleEdit = (e, id) =>{
-    let t = todos.filter(i=>i.id === id)
-    setTodo(t[0].todo)
-    let newTodos = todos.filter(item=>{
-      return item.id !== id;
-    });
-    setTodos(newTodos)
-    saveToLS()
-  }
+    setTodos(prevTodos => {
+      let t = prevTodos.find(i=>i.id === id);
+      if(t){
+        setTodo(t.todo)
+      }
+      return prevTodos.filter(item=>item.id !== id);
+    })
+   };
+  
   const handleDelete = (e, id) =>{
-    let newTodos = todos.filter(item=>{
-      return item.id !== id;
-    });
-    setTodos(newTodos)
-    saveToLS()
+   setTodos(prevTodos => prevTodos.filter(item => item.id !== id));   
   }
 
   const handleAdd = () =>{
-    setTodos([...todos, {id: uuidv4(), todo, isCompleted: false}])
+
+    if(todos.some(t => t.todo === todo)){
+      setTodo("")
+      return;
+    }
+    if(todo === '') return;
+
+    setTodos(prev => [...prev, {id: uuidv4(), todo, isCompleted: false}])
     setTodo("")
-    saveToLS()
+    
   }
 
   const handleChange = (e) =>{
@@ -62,10 +61,13 @@ function App() {
     let newTodos = [...todos];
     newTodos[index].isCompleted = !newTodos[index].isCompleted;
     setTodos(newTodos)
-    saveToLS()
   }
+
+  const handleClearAll = () => {
+    setTodos([]);
+  };
   
-  return (
+  return ( 
     <>
       <Navbar/>
         <div className="container mx-auto my-5 rounded-xl p-5 bg-violet-100 min-h-[80vh] w-1/2">    
@@ -73,7 +75,7 @@ function App() {
           <div className="addTodo my-5 flex flex-col gap-4">
             <h2 className='text-lg font-bold'>Add a todo</h2>
             <input onChange={handleChange} value ={todo} type="text"  className='w-full bg-white rounded-lg px-5 py-1'/>
-            <button className='bg-violet-800 hover:bg-violet-950 disabled:bg-violet-950 p-2 py-1 text-sm font-bold text-white rounded-md my-5' onClick={handleAdd} disabled={todo.length<=3}>Save</button>
+            <button className='bg-violet-800 hover:bg-violet-950 p-2 py-1 text-sm font-bold text-white rounded-md my-5' onClick={handleAdd}>Save</button>
           </div>
           <input className='my-4' onChange={toggleFinished} type="checkbox" checked={showFinished}/> Show Finished
             <h2 className='text-lg font-bold'>Your Todos</h2>
@@ -92,7 +94,12 @@ function App() {
               </div>
               })}
             </div>
-          </div>
+            <div className='flex justify-center'>
+              <button className="bg-red-500 hover:bg-red-700 p-2 py-1 text-sm font-bold text-white rounded-md mx-auto my-6 " onClick={()=>{handleClearAll()}}>Clear All</button>
+            </div>
+            
+        </div>
+  
     </>
   )
 }
